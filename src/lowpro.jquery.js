@@ -92,9 +92,9 @@
 
   var bindEvents = function(instance) {
     for (var member in instance) {
-      if (member.match(/^on(.+)/) && typeof instance[member] == 'function') {
-        instance.element.bind(RegExp.$1, $.bind(instance[member], instance));
-      }
+      var matches = member.match(/^on(.+)/);
+      if (matches && typeof instance[member] == 'function')
+        instance.element.bind(matches[1], $.bind(instance[member], instance));
     }
   }
 
@@ -172,9 +172,7 @@
 
   Remote.Base = $.klass({
     initialize : function(options) {
-      this.options = $.extend({
-
-      }, options || {});
+      this.options = options;
     },
     _makeRequest : function(options) {
       $.ajax(options);
@@ -184,7 +182,10 @@
 
   Remote.Link = $.klass(Remote.Base, {
     onclick: function() {
-      var options = $.extend({ url: this.element.attr('href'), type: 'GET' }, this.options);
+      var options = $.extend({ 
+        url: this.element.attr('href'), 
+        type: 'GET' 
+      }, this.options);
       return this._makeRequest(options);
     }
   });
